@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Trend Store – Fresh Finds, Best Prices</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  :root {
+    --bg: #fdf8f4;
+    --black: #1a1009;
+    --accent: #e8622a;
+    --accent2: #f5b942;
+    --soft: #f0e8de;
+    --card: #fff;
+    --text: #2d1f0f;
+    --muted: #8a7060;
+    --radius: 18px;
+    --shadow: 0 8px 40px rgba(30,15,5,.1);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 900;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 5vw;
+    background: rgba(253,248,244,.92);
+    backdrop-filter: blur(14px);
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    animation: fadeDown .6s ease both;
+  }
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-20px) } to { opacity:1; transform:none } }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 900;
+    color: var(--black); letter-spacing: -.02em;
+  }
+  .logo span { color: var(--accent); }
+  nav a.shop-btn {
+    background: var(--accent); color: #fff;
+    padding: 10px 24px; border-radius: 50px;
+    font-weight: 600; font-size: .9rem;
+    text-decoration: none; transition: background .2s, transform .15s;
+  }
+  nav a.shop-btn:hover { background: #c94e1e; transform: scale(1.04); }
+
+  /* ── CART ICON ── */
+  #cart-btn {
+    position: fixed; top: 16px; right: 5vw; z-index: 1000;
+    background: var(--black); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 10px 18px; cursor: pointer;
+    font-size: .9rem; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.25);
+    transition: transform .15s;
+  }
+  #cart-btn:hover { transform: scale(1.06); }
+  #cart-count {
+    background: var(--accent); color: #fff;
+    border-radius: 50%; width: 22px; height: 22px;
+    font-size: .75rem; display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative; width: 100%; height: 100svh; min-height: 520px;
+    display: flex; align-items: center; justify-content: flex-start;
+    overflow: hidden;
+    animation: fadeIn .8s ease both .2s;
+  }
+  @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+  .hero img.hero-img {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; object-position: center top;
+    filter: brightness(.55);
+  }
+  .hero-content {
+    position: relative; z-index: 2;
+    padding: 0 8vw;
+    max-width: 680px;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: var(--accent2); color: var(--black);
+    font-weight: 700; font-size: .8rem; letter-spacing: .12em;
+    text-transform: uppercase; padding: 5px 14px; border-radius: 50px;
+    margin-bottom: 20px;
+    animation: slideUp .7s ease both .4s;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    line-height: 1.05; color: #fff; font-weight: 900;
+    margin-bottom: 16px;
+    animation: slideUp .7s ease both .5s;
+  }
+  .hero h1 em { color: var(--accent2); font-style: normal; }
+  .hero p {
+    color: rgba(255,255,255,.8); font-size: 1.1rem;
+    margin-bottom: 32px;
+    animation: slideUp .7s ease both .6s;
+  }
+  .hero .cta {
+    display: inline-block;
+    background: var(--accent); color: #fff;
+    padding: 16px 38px; border-radius: 50px;
+    font-weight: 700; font-size: 1rem;
+    text-decoration: none; transition: background .2s, transform .15s;
+    animation: slideUp .7s ease both .7s;
+  }
+  .hero .cta:hover { background: #c94e1e; transform: translateY(-2px); }
+  @keyframes slideUp { from { opacity:0; transform:translateY(30px) } to { opacity:1; transform:none } }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    text-align: center; padding: 80px 5vw 40px;
+  }
+  .section-title h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3rem); font-weight: 900;
+    color: var(--black);
+  }
+  .section-title p { color: var(--muted); margin-top: 8px; font-size: 1rem; }
+  .section-title .line {
+    width: 60px; height: 4px; background: var(--accent);
+    border-radius: 2px; margin: 14px auto 0;
+  }
+
+  /* ── CAROUSEL ── */
+  #products { background: var(--soft); padding-bottom: 80px; }
+  .carousel-wrap {
+    overflow-x: auto; display: flex; gap: 22px;
+    padding: 0 5vw 20px;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .carousel-wrap::-webkit-scrollbar { display: none; }
+
+  .product-card {
+    flex: 0 0 280px;
+    background: var(--card);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    scroll-snap-align: start;
+    transition: transform .25s, box-shadow .25s;
+    display: flex; flex-direction: column;
+  }
+  .product-card:hover { transform: translateY(-6px); box-shadow: 0 18px 50px rgba(30,15,5,.15); }
+  .product-card img {
+    width: 100%; height: 300px; object-fit: cover;
+    transition: transform .4s;
+  }
+  .product-card:hover img { transform: scale(1.04); }
+  .product-info { padding: 18px 18px 22px; flex: 1; display: flex; flex-direction: column; }
+  .product-info h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; font-weight: 700; margin-bottom: 4px;
+    color: var(--black);
+  }
+  .product-info .price {
+    color: var(--accent); font-weight: 700; font-size: 1.15rem; margin-bottom: 16px;
+  }
+  .product-info .price del { color: var(--muted); font-weight: 400; font-size: .9rem; margin-left: 6px; }
+  .add-cart-btn {
+    margin-top: auto;
+    background: var(--black); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 11px 0; width: 100%;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600; font-size: .9rem; cursor: pointer;
+    transition: background .2s, transform .15s;
+  }
+  .add-cart-btn:hover { background: var(--accent); transform: scale(1.02); }
+  .add-cart-btn.added { background: #27ae60; }
+
+  /* ── ARROW BUTTONS ── */
+  .carousel-controls {
+    display: flex; justify-content: center; gap: 12px; margin-top: 24px;
+  }
+  .carousel-controls button {
+    background: var(--black); color: #fff;
+    border: none; border-radius: 50%; width: 44px; height: 44px;
+    font-size: 1.2rem; cursor: pointer; transition: background .2s;
+  }
+  .carousel-controls button:hover { background: var(--accent); }
+
+  /* ── CART MODAL ── */
+  .overlay {
+    display: none; position: fixed; inset: 0; z-index: 1100;
+    background: rgba(0,0,0,.45); backdrop-filter: blur(4px);
+  }
+  .overlay.open { display: block; }
+  .cart-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0; z-index: 1200;
+    width: min(420px, 100vw);
+    background: #fff;
+    box-shadow: -10px 0 60px rgba(0,0,0,.15);
+    display: flex; flex-direction: column;
+    transform: translateX(110%);
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  .cart-drawer.open { transform: none; }
+  .cart-header {
+    padding: 24px 22px 18px;
+    border-bottom: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cart-header h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem; font-weight: 900;
+  }
+  .close-cart {
+    background: none; border: none; font-size: 1.5rem;
+    cursor: pointer; color: var(--muted); transition: color .2s;
+  }
+  .close-cart:hover { color: var(--accent); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 16px 22px; }
+  .cart-empty { text-align: center; color: var(--muted); margin-top: 60px; font-size: 1rem; }
+  .cart-item {
+    display: flex; gap: 12px; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid #f0ece8;
+  }
+  .cart-item img { width: 58px; height: 58px; object-fit: cover; border-radius: 10px; }
+  .cart-item-info { flex: 1; }
+  .cart-item-info .name { font-weight: 600; font-size: .95rem; }
+  .cart-item-info .price { color: var(--accent); font-size: .9rem; font-weight: 700; }
+  .remove-item { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1.1rem; transition: color .2s; }
+  .remove-item:hover { color: #e74c3c; }
+  .cart-total {
+    padding: 14px 22px;
+    font-weight: 700; font-size: 1.05rem;
+    border-top: 1px solid #eee;
+    display: flex; justify-content: space-between;
+    color: var(--black);
+  }
+  .cart-total span { color: var(--accent); font-size: 1.2rem; }
+
+  /* ── ORDER FORM ── */
+  .order-form { padding: 16px 22px 24px; border-top: 1px solid #eee; }
+  .order-form h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem; font-weight: 700; margin-bottom: 12px; color: var(--black);
+  }
+  .order-form input {
+    width: 100%; margin-bottom: 10px;
+    padding: 11px 14px; border: 1.5px solid #e5ddd5;
+    border-radius: 10px; font-family: 'DM Sans', sans-serif;
+    font-size: .9rem; color: var(--text);
+    background: var(--bg); outline: none;
+    transition: border-color .2s;
+  }
+  .order-form input:focus { border-color: var(--accent); }
+  .send-order-btn {
+    width: 100%; background: var(--accent); color: #fff;
+    border: none; border-radius: 50px;
+    padding: 14px; font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 1rem; cursor: pointer;
+    transition: background .2s, transform .15s;
+    margin-top: 4px;
+  }
+  .send-order-btn:hover { background: #c94e1e; transform: scale(1.01); }
+  .send-order-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
+  .order-status {
+    margin-top: 10px; font-size: .88rem; text-align: center;
+    font-weight: 600; color: #27ae60;
+  }
+  .order-status.err { color: #e74c3c; }
+
+  /* ── FLOATING BUTTONS ── */
+  .fab-group {
+    position: fixed; bottom: 28px; right: 22px; z-index: 800;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 12px;
+  }
+  .whatsapp-fab {
+    background: #25D366; color: #fff;
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    text-decoration: none; box-shadow: 0 4px 18px rgba(37,211,102,.4);
+    font-size: 1.5rem; transition: transform .2s;
+  }
+  .whatsapp-fab:hover { transform: scale(1.1); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--black); color: rgba(255,255,255,.6);
+    text-align: center; padding: 36px 5vw;
+    font-size: .88rem;
+  }
+  footer strong { color: #fff; font-family: 'Playfair Display', serif; }
+  footer a { color: var(--accent2); text-decoration: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 2.5rem; }
+    .product-card { flex: 0 0 240px; }
+    .product-card img { height: 240px; }
+    nav .logo { font-size: 1.2rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">The Trend<span>Store</span></div>
+  <a class="shop-btn" href="#products">Shop Now</a>
+</nav>
+
+<!-- CART BUTTON -->
+<button id="cart-btn" onclick="toggleCart()">
+  🛒 Cart <div id="cart-count">0</div>
+</button>
+
+<!-- HERO -->
+<section class="hero">
+  <img class="hero-img" src="https://i.ibb.co/8Dhhg1MG/full-length-portrait-happy-excited-girl-bright-colorful-clothes-holding-shopping-bags-while-standing.jpg" alt="Hero" />
+  <div class="hero-content">
+    <div class="hero-tag">🔥 New Arrivals</div>
+    <h1>Fresh Finds,<br/><em>Best Prices</em></h1>
+    <p>Discover the latest trends handpicked just for you. Style that speaks, prices that sing.</p>
+    <a class="cta" href="#products">Shop Now ↓</a>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="section-title">
+    <h2>Our Collection</h2>
+    <p>Curated picks you'll absolutely love</p>
+    <div class="line"></div>
+  </div>
+
+  <div class="carousel-wrap" id="carousel">
+    <!-- Cards injected by JS -->
+  </div>
+
+  <div class="carousel-controls">
+    <button onclick="scroll(-1)" title="Previous">‹</button>
+    <button onclick="scroll(1)" title="Next">›</button>
+  </div>
+</section>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="toggleCart()"></div>
+
+<!-- CART DRAWER -->
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-header">
+    <h3>🛍️ Your Cart</h3>
+    <button class="close-cart" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <p class="cart-empty">Your cart is empty.<br/>Add some items to get started!</p>
+  </div>
+  <div class="cart-total" id="cartTotal" style="display:none">
+    <span>Total</span><span id="totalAmt">₹0</span>
+  </div>
+  <div class="order-form" id="orderForm" style="display:none">
+    <h4>Your Details</h4>
+    <input type="text" id="custName" placeholder="Your Name *" required />
+    <input type="tel" id="custPhone" placeholder="Phone Number *" required />
+    <input type="email" id="custEmail" placeholder="Your Email (optional)" />
+    <button class="send-order-btn" id="sendBtn" onclick="sendOrder()">📧 Send Order</button>
+    <div class="order-status" id="orderStatus"></div>
+  </div>
+</div>
+
+<!-- FLOATING BUTTONS -->
+<div class="fab-group">
+  <a class="whatsapp-fab" href="https://wa.me/9" target="_blank" title="Chat on WhatsApp">
+    <svg width="26" height="26" viewBox="0 0 32 32" fill="white"><path d="M16 .5C7.44.5.5 7.44.5 16c0 2.83.74 5.49 2.03 7.8L.5 31.5l8-2a15.48 15.48 0 007.5 1.92C24.56 31.42 31.5 24.48 31.5 16 31.5 7.44 24.56.5 16 .5zm0 28.3a13.1 13.1 0 01-6.68-1.83l-.48-.29-4.96 1.3 1.32-4.83-.31-.5A13.1 13.1 0 012.82 16C2.82 9.12 8.62 3.3 16 3.3c7.36 0 13.18 5.82 13.18 12.7 0 6.9-5.82 12.8-13.18 12.8zm7.2-9.6c-.4-.2-2.34-1.15-2.7-1.28-.37-.13-.63-.2-.9.2-.26.4-1.02 1.28-1.25 1.55-.23.26-.46.3-.86.1-.4-.2-1.68-.62-3.2-1.98-1.18-1.05-1.98-2.35-2.21-2.75-.23-.4-.02-.62.17-.82.18-.18.4-.46.6-.7.2-.23.26-.4.4-.66.13-.26.07-.5-.04-.7-.1-.2-.9-2.16-1.23-2.96-.32-.78-.65-.67-.9-.68h-.77c-.27 0-.7.1-1.06.5-.37.4-1.4 1.36-1.4 3.32s1.43 3.85 1.63 4.12c.2.26 2.82 4.3 6.82 6.03.95.41 1.7.66 2.27.84.96.3 1.83.26 2.52.16.77-.12 2.34-.96 2.67-1.88.33-.93.33-1.72.23-1.88-.1-.16-.36-.26-.76-.46z"/></svg>
+  </a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p><strong>The Trend Store</strong> — Fresh Finds, Best Prices</p>
+  <p style="margin-top:8px">📧 <a href="mailto:thetrendstore@gmail.com">thetrendstore@gmail.com</a></p>
+  <p style="margin-top:8px;font-size:.8rem">© 2025 The Trend Store. All rights reserved.</p>
+</footer>
+
+<script>
+  // ── EmailJS Init ──
+  emailjs.init("YOUR_PUBLIC_KEY"); // Replace with your EmailJS public key
+
+  // ── Products ──
+  const products = [
+    { id:1, name:"Summer Floral Dress", price:1299, old:1899, img:"https://i.ibb.co/qtXLRWF/Gemini-Generated-Image-j23ma4j23ma4j23m.png" },
+    { id:2, name:"Chic Co-ord Set",     price:1599, old:2299, img:"https://i.ibb.co/Tq7wqvvL/Chat-GPT-Image-Mar-1-2026-08-36-55-PM.png" },
+    { id:3, name:"Pastel Midi Skirt",   price:899,  old:1399, img:"https://i.ibb.co/DPMkRYP0/Chat-GPT-Image-Mar-1-2026-08-38-10-PM.png" },
+    { id:4, name:"Boho Crop Top",       price:749,  old:1099, img:"https://i.ibb.co/9mjsKS0c/Chat-GPT-Image-Mar-1-2026-08-39-19-PM.png" },
+    { id:5, name:"Trendy Palazzo Pants",price:1099, old:1599, img:"https://i.ibb.co/G4x07yGc/Chat-GPT-Image-Mar-1-2026-08-41-54-PM.png" },
+    { id:6, name:"Ethnic Fusion Kurta", price:1399, old:2099, img:"https://i.ibb.co/LDfLtVWf/Chat-GPT-Image-Mar-1-2026-08-42-48-PM.png" },
+  ];
+
+  // ── Render Cards ──
+  const carousel = document.getElementById('carousel');
+  products.forEach(p => {
+    carousel.innerHTML += `
+      <div class="product-card">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" />
+        <div class="product-info">
+          <h3>${p.name}</h3>
+          <div class="price">₹${p.price} <del>₹${p.old}</del></div>
+          <button class="add-cart-btn" id="btn-${p.id}" onclick="addToCart(${p.id})">Add to Cart</button>
+        </div>
+      </div>`;
+  });
+
+  // ── Cart State ──
+  let cart = [];
+
+  function addToCart(id) {
+    const p = products.find(x => x.id === id);
+    const existing = cart.find(x => x.id === id);
+    if (existing) existing.qty++;
+    else cart.push({ ...p, qty: 1 });
+    updateCartUI();
+    const btn = document.getElementById('btn-' + id);
+    btn.textContent = '✓ Added';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = 'Add to Cart'; btn.classList.remove('added'); }, 1500);
+  }
+
+  function removeFromCart(id) {
+    cart = cart.filter(x => x.id !== id);
+    updateCartUI();
+  }
+
+  function updateCartUI() {
+    const count = cart.reduce((s, x) => s + x.qty, 0);
+    document.getElementById('cart-count').textContent = count;
+
+    const container = document.getElementById('cartItems');
+    if (cart.length === 0) {
+      container.innerHTML = '<p class="cart-empty">Your cart is empty.<br/>Add some items to get started!</p>';
+      document.getElementById('cartTotal').style.display = 'none';
+      document.getElementById('orderForm').style.display = 'none';
+      return;
+    }
+
+    container.innerHTML = cart.map(item => `
+      <div class="cart-item">
+        <img src="${item.img}" alt="${item.name}" />
+        <div class="cart-item-info">
+          <div class="name">${item.name}</div>
+          <div class="price">₹${item.price} × ${item.qty} = ₹${item.price * item.qty}</div>
+        </div>
+        <button class="remove-item" onclick="removeFromCart(${item.id})">🗑</button>
+      </div>`).join('');
+
+    const total = cart.reduce((s, x) => s + x.price * x.qty, 0);
+    document.getElementById('totalAmt').textContent = '₹' + total;
+    document.getElementById('cartTotal').style.display = 'flex';
+    document.getElementById('orderForm').style.display = 'block';
+  }
+
+  function toggleCart() {
+    const drawer = document.getElementById('cartDrawer');
+    const overlay = document.getElementById('overlay');
+    drawer.classList.toggle('open');
+    overlay.classList.toggle('open');
+  }
+
+  function scroll(dir) {
+    carousel.scrollBy({ left: dir * 300, behavior: 'smooth' });
+  }
+
+  // ── Send Order via EmailJS ──
+  async function sendOrder() {
+    const name = document.getElementById('custName').value.trim();
+    const phone = document.getElementById('custPhone').value.trim();
+    const email = document.getElementById('custEmail').value.trim();
+    const status = document.getElementById('orderStatus');
+
+    if (!name || !phone) {
+      status.textContent = '⚠️ Please enter your name and phone number.';
+      status.className = 'order-status err';
+      return;
+    }
+    if (cart.length === 0) {
+      status.textContent = '⚠️ Cart is empty!';
+      status.className = 'order-status err';
+      return;
+    }
+
+    const itemsList = cart.map(i => `• ${i.name} (Qty: ${i.qty}) — ₹${i.price * i.qty}`).join('\n');
+    const total = cart.reduce((s, x) => s + x.price * x.qty, 0);
+
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    status.textContent = '';
+
+    try {
+      await emailjs.send(
+        "YOUR_SERVICE_ID",   // Replace with your EmailJS Service ID
+        "YOUR_TEMPLATE_ID",  // Replace with your EmailJS Template ID
+        {
+          to_email: "thetrendstore@gmail.com",
+          customer_name: name,
+          customer_phone: phone,
+          customer_email: email || "Not provided",
+          order_items: itemsList,
+          order_total: "₹" + total,
+        }
+      );
+      status.textContent = '✅ Order sent! We\'ll contact you soon.';
+      status.className = 'order-status';
+      cart = [];
+      updateCartUI();
+      document.getElementById('custName').value = '';
+      document.getElementById('custPhone').value = '';
+      document.getElementById('custEmail').value = '';
+    } catch (err) {
+      status.textContent = '❌ Failed to send. Please try WhatsApp instead.';
+      status.className = 'order-status err';
+      console.error(err);
+    }
+
+    btn.disabled = false;
+    btn.textContent = '📧 Send Order';
+  }
+</script>
+</body>
+</html>
